@@ -73,6 +73,20 @@ public class Carona {
         return reservasConfirmadas < vagasTotais;
     }
 
+    public boolean estaConcluida() {
+        return situacao == SituacaoCarona.CONCLUIDA;
+    }
+
+    public boolean estaCancelada() {
+        return situacao == SituacaoCarona.CANCELADA;
+    }
+
+    public void atualizarSituacaoAposCancelamentoDeReserva() {
+        if (situacao == SituacaoCarona.LOTADA && possuiVagasDisponiveis()) {
+            this.situacao = SituacaoCarona.ABERTA;
+        }
+    }
+
     public void cancelar() {
         this.situacao = SituacaoCarona.CANCELADA;
         reservas.forEach(Reserva::cancelar);

@@ -46,7 +46,16 @@ public class ReservaService {
         Reserva reserva = reservaRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Reserva não encontrada"));
 
+        if (reserva.estaCancelada()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Reserva já está cancelada");
+        }
+
+        if (reserva.getCarona().estaConcluida()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Reserva de carona concluída não pode ser cancelada");
+        }
+
         reserva.cancelar();
+        reserva.getCarona().atualizarSituacaoAposCancelamentoDeReserva();
         return ReservaResponse.fromModel(reserva);
     }
 }

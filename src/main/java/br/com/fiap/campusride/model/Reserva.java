@@ -41,4 +41,8 @@ public class Reserva {
     public void cancelar() {
         this.situacao = SituacaoReserva.CANCELADA;
     }
+
+    public boolean estaCancelada() {
+        return situacao == SituacaoReserva.CANCELADA;
+    }
 }

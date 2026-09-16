@@ -46,4 +46,24 @@ class ReservaServiceIntegrationTest {
                 .extracting(exception -> ((ResponseStatusException) exception).getStatusCode())
                 .isEqualTo(HttpStatus.BAD_REQUEST);
     }
+
+    @Test
+    void reopensCaronaWhenConfirmedReservationIsCancelled() {
+        Carona carona = caronaRepository.save(new Carona(
+                "Ana Souza",
+                "Campus Norte",
+                "Campus Sul",
+                LocalDateTime.now().plusDays(1),
+                TipoVeiculo.MOTO,
+                1
+        ));
+
+        var reserva = reservaService.reservar(carona.getId(), new ReservaRequest("Bruno Lima"));
+        reservaService.cancelar(reserva.id());
+
+        Carona caronaAberta = caronaRepository.findById(carona.getId()).orElseThrow();
+        assertThat(caronaAberta.getSituacao()).isEqualTo(SituacaoCarona.ABERTA);
+
+        assertThat(reservaService.reservar(carona.getId(), new ReservaRequest("Carla Reis"))).isNotNull();
+    }
 }

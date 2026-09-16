@@ -53,6 +53,14 @@ public class CaronaService {
         Carona carona = caronaRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Carona não encontrada"));
 
+        if (carona.estaConcluida()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Carona concluída não pode ser cancelada");
+        }
+
+        if (carona.estaCancelada()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Carona já está cancelada");
+        }
+
         carona.cancelar();
         return CaronaDetalheResponse.fromModel(carona);
     }
