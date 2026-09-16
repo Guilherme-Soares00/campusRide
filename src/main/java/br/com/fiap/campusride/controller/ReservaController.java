@@ -3,6 +3,7 @@ package br.com.fiap.campusride.controller;
 import br.com.fiap.campusride.dto.ReservaRequest;
 import br.com.fiap.campusride.dto.ReservaResponse;
 import br.com.fiap.campusride.service.ReservaService;
+import jakarta.validation.Valid;
 import java.net.URI;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -21,7 +22,7 @@ public class ReservaController {
     }
 
     @PostMapping("/caronas/{caronaId}/reservas")
-    public ResponseEntity<ReservaResponse> reservar(@PathVariable Long caronaId, @RequestBody ReservaRequest request) {
+    public ResponseEntity<ReservaResponse> reservar(@PathVariable Long caronaId, @Valid @RequestBody ReservaRequest request) {
         ReservaResponse response = reservaService.reservar(caronaId, request);
         URI location = URI.create("/reservas/" + response.id());
 

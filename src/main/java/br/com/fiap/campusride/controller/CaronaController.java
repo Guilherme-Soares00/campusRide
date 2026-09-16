@@ -4,6 +4,7 @@ import br.com.fiap.campusride.dto.CaronaRequest;
 import br.com.fiap.campusride.dto.CaronaDetalheResponse;
 import br.com.fiap.campusride.dto.CaronaResponse;
 import br.com.fiap.campusride.service.CaronaService;
+import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,7 @@ public class CaronaController {
     }
 
     @PostMapping
-    public ResponseEntity<CaronaResponse> criar(@RequestBody CaronaRequest request) {
+    public ResponseEntity<CaronaResponse> criar(@Valid @RequestBody CaronaRequest request) {
         CaronaResponse response = caronaService.criar(request);
         URI location = URI.create("/caronas/" + response.id());
 

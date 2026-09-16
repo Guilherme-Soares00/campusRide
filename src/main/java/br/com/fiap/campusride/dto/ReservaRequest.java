@@ -1,4 +1,6 @@
 package br.com.fiap.campusride.dto;
 
-public record ReservaRequest(String passageiro) {
+import jakarta.validation.constraints.NotBlank;
+
+public record ReservaRequest(@NotBlank String passageiro) {
 }
