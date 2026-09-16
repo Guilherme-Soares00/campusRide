@@ -1,5 +1,9 @@
-package br.com.fiap.campusride.carona;
+package br.com.fiap.campusride.service;
 
+import br.com.fiap.campusride.dto.CaronaRequest;
+import br.com.fiap.campusride.dto.CaronaResponse;
+import br.com.fiap.campusride.model.Carona;
+import br.com.fiap.campusride.repository.CaronaRepository;
 import java.util.List;
 import org.springframework.stereotype.Service;
 

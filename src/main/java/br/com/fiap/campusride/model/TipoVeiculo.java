@@ -1,4 +1,4 @@
-package br.com.fiap.campusride.carona;
+package br.com.fiap.campusride.model;
 
 public enum TipoVeiculo {
     MOTO,

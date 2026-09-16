@@ -2,11 +2,11 @@ package br.com.fiap.campusride;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import br.com.fiap.campusride.carona.Carona;
-import br.com.fiap.campusride.carona.CaronaRepository;
-import br.com.fiap.campusride.carona.TipoVeiculo;
-import br.com.fiap.campusride.reserva.Reserva;
-import br.com.fiap.campusride.reserva.ReservaRepository;
+import br.com.fiap.campusride.model.Carona;
+import br.com.fiap.campusride.model.Reserva;
+import br.com.fiap.campusride.model.TipoVeiculo;
+import br.com.fiap.campusride.repository.CaronaRepository;
+import br.com.fiap.campusride.repository.ReservaRepository;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

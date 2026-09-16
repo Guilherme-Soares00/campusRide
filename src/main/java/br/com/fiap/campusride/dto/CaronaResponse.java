@@ -1,5 +1,8 @@
-package br.com.fiap.campusride.carona;
+package br.com.fiap.campusride.dto;
 
+import br.com.fiap.campusride.model.Carona;
+import br.com.fiap.campusride.model.SituacaoCarona;
+import br.com.fiap.campusride.model.TipoVeiculo;
 import java.time.LocalDateTime;
 
 public record CaronaResponse(

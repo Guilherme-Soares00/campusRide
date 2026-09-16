@@ -1,6 +1,4 @@
-package br.com.fiap.campusride.reserva;
-
-import br.com.fiap.campusride.carona.Carona;
+package br.com.fiap.campusride.model;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

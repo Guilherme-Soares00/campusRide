@@ -1,4 +1,4 @@
-package br.com.fiap.campusride.reserva;
+package br.com.fiap.campusride.model;
 
 public enum SituacaoReserva {
     CONFIRMADA,
