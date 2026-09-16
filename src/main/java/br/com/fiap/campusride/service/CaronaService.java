@@ -3,21 +3,26 @@ package br.com.fiap.campusride.service;
 import br.com.fiap.campusride.dto.CaronaRequest;
 import br.com.fiap.campusride.dto.CaronaDetalheResponse;
 import br.com.fiap.campusride.dto.CaronaResponse;
+import br.com.fiap.campusride.exception.RecursoNaoEncontradoException;
+import br.com.fiap.campusride.exception.RegraNegocioException;
 import br.com.fiap.campusride.model.Carona;
+import br.com.fiap.campusride.model.SituacaoCarona;
 import br.com.fiap.campusride.repository.CaronaRepository;
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.List;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class CaronaService {
 
     private final CaronaRepository caronaRepository;
+    private final Clock clock;
 
-    public CaronaService(CaronaRepository caronaRepository) {
+    public CaronaService(CaronaRepository caronaRepository, Clock clock) {
         this.caronaRepository = caronaRepository;
+        this.clock = clock;
     }
 
     public CaronaResponse criar(CaronaRequest request) {
@@ -33,8 +38,12 @@ public class CaronaService {
         return CaronaResponse.fromModel(caronaRepository.save(carona));
     }
 
+    @Transactional(readOnly = true)
     public List<CaronaResponse> listar() {
-        return caronaRepository.findAll()
+        return caronaRepository.findBySituacaoAndDataHoraPartidaAfterOrderByDataHoraPartidaAsc(
+                        SituacaoCarona.ABERTA,
+                        LocalDateTime.now(clock)
+                )
                 .stream()
                 .map(CaronaResponse::fromModel)
                 .toList();
@@ -43,7 +52,7 @@ public class CaronaService {
     @Transactional(readOnly = true)
     public CaronaDetalheResponse buscarPorId(Long id) {
         Carona carona = caronaRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Carona não encontrada"));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Carona não encontrada"));
 
         return CaronaDetalheResponse.fromModel(carona);
     }
@@ -51,14 +60,14 @@ public class CaronaService {
     @Transactional
     public CaronaDetalheResponse cancelar(Long id) {
         Carona carona = caronaRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Carona não encontrada"));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Carona não encontrada"));
 
         if (carona.estaConcluida()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Carona concluída não pode ser cancelada");
+            throw new RegraNegocioException("Carona concluída não pode ser cancelada");
         }
 
         if (carona.estaCancelada()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Carona já está cancelada");
+            throw new RegraNegocioException("Carona já está cancelada");
         }
 
         carona.cancelar();

@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import br.com.fiap.campusride.dto.ReservaRequest;
+import br.com.fiap.campusride.exception.RegraNegocioException;
 import br.com.fiap.campusride.model.Carona;
 import br.com.fiap.campusride.model.SituacaoCarona;
 import br.com.fiap.campusride.model.TipoVeiculo;
@@ -13,10 +14,10 @@ import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
+@Transactional
 class ReservaServiceIntegrationTest {
 
     @Autowired
@@ -42,9 +43,8 @@ class ReservaServiceIntegrationTest {
         assertThat(caronaLotada.getSituacao()).isEqualTo(SituacaoCarona.LOTADA);
 
         assertThatThrownBy(() -> reservaService.reservar(carona.getId(), new ReservaRequest("Carla Reis")))
-                .isInstanceOf(ResponseStatusException.class)
-                .extracting(exception -> ((ResponseStatusException) exception).getStatusCode())
-                .isEqualTo(HttpStatus.BAD_REQUEST);
+                .isInstanceOf(RegraNegocioException.class)
+                .hasMessage("Carona não está aberta para reservas");
     }
 
     @Test
@@ -65,5 +65,39 @@ class ReservaServiceIntegrationTest {
         assertThat(caronaAberta.getSituacao()).isEqualTo(SituacaoCarona.ABERTA);
 
         assertThat(reservaService.reservar(carona.getId(), new ReservaRequest("Carla Reis"))).isNotNull();
+    }
+
+    @Test
+    void blocksReservationAfterDepartureTime() {
+        Carona carona = caronaRepository.save(new Carona(
+                "Ana Souza",
+                "Campus Norte",
+                "Campus Sul",
+                LocalDateTime.now().minusMinutes(1),
+                TipoVeiculo.CARRO,
+                2
+        ));
+
+        assertThatThrownBy(() -> reservaService.reservar(carona.getId(), new ReservaRequest("Bruno Lima")))
+                .isInstanceOf(RegraNegocioException.class)
+                .hasMessage("Carona em andamento não aceita reservas");
+    }
+
+    @Test
+    void blocksReservationWhenCaronaIsCancelled() {
+        Carona carona = new Carona(
+                "Ana Souza",
+                "Campus Norte",
+                "Campus Sul",
+                LocalDateTime.now().plusDays(1),
+                TipoVeiculo.CARRO,
+                2
+        );
+        carona.cancelar();
+        caronaRepository.save(carona);
+
+        assertThatThrownBy(() -> reservaService.reservar(carona.getId(), new ReservaRequest("Bruno Lima")))
+                .isInstanceOf(RegraNegocioException.class)
+                .hasMessage("Carona cancelada não aceita reservas");
     }
 }

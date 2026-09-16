@@ -1,4 +1,6 @@
 package br.com.fiap.campusride.model;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -25,10 +27,14 @@ public class Reserva {
     @JoinColumn(name = "carona_id", nullable = false)
     private Carona carona;
 
+    @Column(nullable = false, length = 100)
     private String passageiro;
+
+    @Column(nullable = false)
     private LocalDateTime realizadaEm;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
     private SituacaoReserva situacao;
 
     public Reserva(Carona carona, String passageiro) {

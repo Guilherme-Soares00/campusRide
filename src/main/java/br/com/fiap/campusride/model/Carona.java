@@ -1,5 +1,7 @@
 package br.com.fiap.campusride.model;
+
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -27,19 +29,30 @@ public class Carona {
     @Version
     private Long version;
 
+    @Column(nullable = false, length = 100)
     private String motorista;
+
+    @Column(nullable = false, length = 150)
     private String origem;
+
+    @Column(nullable = false, length = 150)
     private String destino;
+
+    @Column(nullable = false)
     private LocalDateTime dataHoraPartida;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
     private TipoVeiculo tipoVeiculo;
 
+    @Column(nullable = false)
     private Integer vagasTotais;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
     private SituacaoCarona situacao;
 
+    @Getter(AccessLevel.NONE)
     @OneToMany(mappedBy = "carona", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reserva> reservas = new ArrayList<>();
 
@@ -65,6 +78,14 @@ public class Carona {
         return situacao == SituacaoCarona.ABERTA;
     }
 
+    public boolean estaEmAndamento() {
+        return situacao == SituacaoCarona.EM_ANDAMENTO;
+    }
+
+    public boolean aindaNaoPartiu(LocalDateTime agora) {
+        return dataHoraPartida.isAfter(agora);
+    }
+
     public boolean possuiVagasDisponiveis() {
         long reservasConfirmadas = reservas.stream()
                 .filter(reserva -> reserva.getSituacao() == SituacaoReserva.CONFIRMADA)
@@ -79,6 +100,10 @@ public class Carona {
 
     public boolean estaCancelada() {
         return situacao == SituacaoCarona.CANCELADA;
+    }
+
+    public List<Reserva> getReservas() {
+        return List.copyOf(reservas);
     }
 
     public void atualizarSituacaoAposCancelamentoDeReserva() {
