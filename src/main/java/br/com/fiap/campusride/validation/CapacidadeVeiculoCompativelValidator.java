@@ -12,11 +12,20 @@ public class CapacidadeVeiculoCompativelValidator implements ConstraintValidator
             return true;
         }
 
-        return switch (request.tipoVeiculo()) {
+        boolean capacidadeCompativel = switch (request.tipoVeiculo()) {
             case MOTO -> request.vagasTotais() <= 1;
             case CARRO -> request.vagasTotais() <= 5;
             case SUV -> request.vagasTotais() <= 7;
             case VAN -> request.vagasTotais() <= 15;
         };
+
+        if (!capacidadeCompativel) {
+            context.disableDefaultConstraintViolation();
+            context.buildConstraintViolationWithTemplate(context.getDefaultConstraintMessageTemplate())
+                    .addPropertyNode("vagasTotais")
+                    .addConstraintViolation();
+        }
+
+        return capacidadeCompativel;
     }
 }
