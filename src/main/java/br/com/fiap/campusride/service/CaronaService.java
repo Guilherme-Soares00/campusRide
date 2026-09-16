@@ -47,4 +47,13 @@ public class CaronaService {
 
         return CaronaDetalheResponse.fromModel(carona);
     }
+
+    @Transactional
+    public CaronaDetalheResponse cancelar(Long id) {
+        Carona carona = caronaRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Carona não encontrada"));
+
+        carona.cancelar();
+        return CaronaDetalheResponse.fromModel(carona);
+    }
 }

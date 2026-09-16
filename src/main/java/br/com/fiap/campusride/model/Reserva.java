@@ -37,4 +37,8 @@ public class Reserva {
         this.realizadaEm = LocalDateTime.now();
         this.situacao = SituacaoReserva.CONFIRMADA;
     }
+
+    public void cancelar() {
+        this.situacao = SituacaoReserva.CANCELADA;
+    }
 }

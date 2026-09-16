@@ -48,4 +48,13 @@ public class Carona {
         this.vagasTotais = vagasTotais;
         this.situacao = SituacaoCarona.ABERTA;
     }
+
+    public void adicionarReserva(Reserva reserva) {
+        reservas.add(reserva);
+    }
+
+    public void cancelar() {
+        this.situacao = SituacaoCarona.CANCELADA;
+        reservas.forEach(Reserva::cancelar);
+    }
 }
