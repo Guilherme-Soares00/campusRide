@@ -27,6 +27,14 @@ public class ReservaService {
         Carona carona = caronaRepository.findById(caronaId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Carona não encontrada"));
 
+        if (!carona.estaAberta()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Carona não está aberta para reservas");
+        }
+
+        if (!carona.possuiVagasDisponiveis()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Carona sem vagas disponíveis");
+        }
+
         Reserva reserva = new Reserva(carona, request.passageiro());
         carona.adicionarReserva(reserva);
 

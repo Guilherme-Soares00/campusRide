@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Version;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,9 @@ public class Carona {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Version
+    private Long version;
 
     private String motorista;
     private String origem;
@@ -51,6 +55,22 @@ public class Carona {
 
     public void adicionarReserva(Reserva reserva) {
         reservas.add(reserva);
+
+        if (!possuiVagasDisponiveis()) {
+            this.situacao = SituacaoCarona.LOTADA;
+        }
+    }
+
+    public boolean estaAberta() {
+        return situacao == SituacaoCarona.ABERTA;
+    }
+
+    public boolean possuiVagasDisponiveis() {
+        long reservasConfirmadas = reservas.stream()
+                .filter(reserva -> reserva.getSituacao() == SituacaoReserva.CONFIRMADA)
+                .count();
+
+        return reservasConfirmadas < vagasTotais;
     }
 
     public void cancelar() {
